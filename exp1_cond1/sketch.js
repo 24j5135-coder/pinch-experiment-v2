@@ -3,8 +3,8 @@ const SOUND_PARAM    = 'sine';  // 音の種類: 'none'(音なし) | 'sine' | 's
 const FREQ_MAX       = 400;      // ピッチの上限(Hz)
 const EXP_NAME       = 'exp1';   // 実験の名前('exp1' / 'exp2')。CSVと入口ページの記録に使う
 const COND_NO        = 1;        // 条件の番号。入口ページの進み具合の記録に使う
-const COND_TOTAL     = 3;        // その実験の条件の数
-const SURVEY_URL     = 'https://docs.google.com/forms/d/e/1FAIpQLSc4adJLvBiYwc0KGYy0zEFshxy-kigNaSpTi3z7TYpEXPhnRw/viewform?usp=pp_url&entry.378339459=%E6%9D%A1%E4%BB%B61';       // 終了後に開くアンケートのURL(条件ごとに変える)
+const COND_TOTAL     = 4;        // その実験の条件の数
+const SURVEY_URL     = 'https://docs.google.com/forms/d/e/1FAIpQLSc4adJLvBiYwc0KGYy0zEFshxy-kigNaSpTi3z7TYpEXPhnRw/viewform?usp=pp_url&entry.378339459=%E5%AE%9F%E9%A8%931%EF%BC%9A%E6%9D%A1%E4%BB%B61';       // 終了後に開くアンケートのURL(条件ごとに変える)
 const PITCH_REVERSED = false;    // false: 指を広げる→低い音 / true: 指を広げる→高い音
 const CIRCLE_ON      = true;     // 円: true=表示 / false=なし
 
@@ -18,9 +18,9 @@ const DEBUG             = false; // 診断用の表示(画面下)。本番では
 
 // ===== 画面に出す文章(改行は \n) =====
 const TEXT_PINCH = CIRCLE_ON
-  ? '円を大きくしたり\n小さくしたりするように、\n2本指で広げて近づける動きを\n指を離さず続けてください。'
-  : '2本指を無理のない範囲で\n大きく広げて、近づける動きを\n指を離さず続けてください。';
-const TEXT_GUIDE = '操作の速さの見本です。\n円の大きさが変わる速さ(約' + PACE_SEC + '秒で1回)を\n目安に、広げて近づける動きを\n続けてください。\n(ぴったり合わせなくて大丈夫です)';
+  ? '人差し指と親指で、\n円を大きくしたり\n小さくしたりするように、\n広げて近づける動きを\n指を離さず続けてください。'
+  : '人差し指と親指を、\n無理のない範囲で大きく広げて、\n近づける動きを\n指を離さず続けてください。';
+const TEXT_GUIDE = '操作の速さの見本です。\n人差し指と親指で、\n円の大きさが変わる速さ\n(約' + PACE_SEC + '秒で1回)を目安に、\n広げて近づける動きを\n続けてください。\n(ぴったり合わせなくて大丈夫です)';
 const TEXT_READY = '条件' + COND_NO + ' / ' + COND_TOTAL + '\n\n下のボタンを押すと、\n操作の速さの見本が\n表示されます。';
 const TEXT_DONE = '操作は以上です。\nお疲れさまでした。\n\n①下のボタンで\nデータ(CSV)を保存\n②そのあと、\nアンケートに回答';
 
@@ -40,7 +40,7 @@ const COUNT_COLOR   = [40, 120, 200];  // 回数表示の色(濃い水色)
 const TEXT_COLOR    = 60;
 
 // ===== 音の設定 =====
-const REVERB_ON = true;
+const REVERB_ON = false;
 const LEVEL = ({ sine: 0.3, soft: 0.3, air: 0.6, organ: 0.2, bell: 0.2 }[SOUND_TYPE]) || 0.3;
 
 // ===== 反応・記録の調整 =====

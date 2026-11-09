@@ -37,8 +37,9 @@
   <script>
     // 実験の一覧(名前、見出し、条件の数)
     var EXPS = [
-      { name: 'exp1', title: '実験1', n: 3 },
-      { name: 'exp2', title: '実験2', n: 2 }
+      { name: 'practice', title: '練習(音なし・記録なし)', n: 1, label: '練習', start: '練習を始める' },
+      { name: 'exp1', title: '実験1', n: 4 },
+      { name: 'exp2', title: '実験2', n: 4 }
     ];
     function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
     function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -64,15 +65,15 @@
           if (!done && next === 0) next = i;
           var cls = done ? 'done' : (next === i ? 'next' : '');
           var mark = done ? '(完了)' : (next === i ? '(次はこちら)' : '');
-          items += '<li class="' + cls + '">条件' + i + ' ' + mark + '</li>';
+          items += '<li class="' + cls + '">' + (e.label || '条件' + i) + ' ' + mark + '</li>';
         }
         var sec = document.createElement('div');
         sec.innerHTML = '<h2>' + e.title + '</h2><ol>' + items + '</ol>';
         if (next === 0) {
-          sec.insertAdjacentHTML('beforeend', '<p><b>' + e.title + 'はすべて終了しました。</b></p>');
+          sec.insertAdjacentHTML('beforeend', '<p><b>' + (e.name === 'practice' ? '練習は終了しました。' : e.title + 'はすべて終了しました。') + '</b></p>');
         } else {
           var b = document.createElement('button');
-          b.textContent = e.title + ':' + (next === 1 ? '条件1を始める' : '条件' + next + 'へ進む');
+          b.textContent = e.start || (e.title + ':' + (next === 1 ? '条件1を始める' : '条件' + next + 'へ進む'));
           b.onclick = function () { window.location.href = e.name + '_cond' + next + '/'; };
           sec.appendChild(b);
         }
