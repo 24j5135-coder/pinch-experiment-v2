@@ -13,7 +13,7 @@ const TRIAL_COUNT       = 10;   // ピンチ操作の回数
 const STROKES_PER_COUNT = 2;    // 何ストロークで1回か(2 = 広げる+近づける)
 const STROKE_MIN_PX     = 80;   // 1ストロークと数える最小の指の動き(px)。小さいほど敏感
 const SHOW_PROGRESS     = true; // 上部に「3 / 10 回」を表示するか
-const PACE_SEC          = 2.0;  // 見本のペース(秒)。広げて近づける1往復にかける時間
+const PACE_SEC          = 1.0;  // 見本のペース(秒)。広げて近づける1往復にかける時間
 const DEBUG             = false; // 診断用の表示(画面下)。本番では false にする
 
 // ===== 画面に出す文章(改行は \n) =====
