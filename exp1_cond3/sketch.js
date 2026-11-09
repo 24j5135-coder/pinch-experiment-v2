@@ -1,6 +1,6 @@
 // ===== 実験条件(ここだけ書き換えて比較する) =====
 const SOUND_PARAM    = 'sine';  // 音の種類: 'none'(音なし) | 'sine' | 'soft' | 'air' | 'organ' | 'bell'
-const FREQ_MAX       = 3200;      // ピッチの上限(Hz)
+const FREQ_MAX       = 1600;      // ピッチの上限(Hz)
 const EXP_NAME       = 'exp1';   // 実験の名前('exp1' / 'exp2')。CSVと入口ページの記録に使う
 const COND_NO        = 3;        // 条件の番号。入口ページの進み具合の記録に使う
 const COND_TOTAL     = 3;        // その実験の条件の数
