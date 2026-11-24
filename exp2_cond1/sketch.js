@@ -4,6 +4,14 @@ const FREQ_MAX       = 400;      // ピッチの上限(Hz)
 const EXP_NAME       = 'exp2';   // 実験の名前('exp1' / 'exp2')。CSVと入口ページの記録に使う
 const COND_NO        = 1;        // 条件の番号。入口ページの進み具合の記録に使う
 const COND_TOTAL     = 4;        // その実験の条件の数
+
+// この条件が何番目に提示されたか(入口ページで参加者ごとにランダムに決めた順番)。分からなければ 0
+const ORDER_POS = (function () {
+  try {
+    const order = (localStorage.getItem('pinch_order_' + EXP_NAME) || '').split(',').map(Number);
+    return order.indexOf(COND_NO) + 1;
+  } catch (e) { return 0; }
+})();
 const SURVEY_URL     = 'https://docs.google.com/forms/d/e/1FAIpQLSc4adJLvBiYwc0KGYy0zEFshxy-kigNaSpTi3z7TYpEXPhnRw/viewform?usp=pp_url&entry.378339459=%E5%AE%9F%E9%A8%932%EF%BC%9A%E6%9D%A1%E4%BB%B61';       // 終了後に開くアンケートのURL(条件ごとに変える)
 const PITCH_REVERSED = false;    // false: 指を広げる→低い音 / true: 指を広げる→高い音
 const CIRCLE_ON      = true;     // 円: true=表示 / false=なし
@@ -21,7 +29,7 @@ const TEXT_PINCH = CIRCLE_ON
   ? '人差し指と親指で、\n円を大きくしたり\n小さくしたりするように、\n広げて近づける動きを\n指を離さず続けてください。'
   : '人差し指と親指を、\n無理のない範囲で大きく広げて、\n近づける動きを\n指を離さず続けてください。';
 const TEXT_GUIDE = '操作の速さの見本です。\n人差し指と親指で、\n円の大きさが変わる速さ\n(約' + PACE_SEC + '秒で1回)を目安に、\n広げて近づける動きを\n続けてください。\n(ぴったり合わせなくて大丈夫です)';
-const TEXT_READY = '条件' + COND_NO + ' / ' + COND_TOTAL + '\n\n下のボタンを押すと、\n操作の速さの見本が\n表示されます。';
+const TEXT_READY = (ORDER_POS || COND_NO) + 'つ目 / 全' + COND_TOTAL + 'つ\n\n下のボタンを押すと、\n操作の速さの見本が\n表示されます。';
 const TEXT_DONE = '操作は以上です。\nお疲れさまでした。\n\n①下のボタンで\nデータ(CSV)を保存\n②そのあと、\nアンケートに回答';
 
 // ===== 以下の条件は固定(必要なときだけ変更) =====
@@ -83,7 +91,7 @@ const CSV_HEADER = [
   'gesture_id', 't_ms', 'gesture_t_ms',
   'd', 'vel', 'speed', 'acc', 'speed_acc',
   'freq', 'freq_ratio', 'high_zone', 'sounding', 'circle_size',
-  'exp', 'cond', 'reverb_on'
+  'exp', 'cond', 'reverb_on', 'order_pos'
 ];
 
 function setup() {
@@ -294,7 +302,7 @@ function recordRow(now, d, acc, speedAcc, freq, ratio, sounding) {
     d.toFixed(2), vel.toFixed(2), speed.toFixed(2), acc.toFixed(1), speedAcc.toFixed(1),
     freq.toFixed(1), ratio.toFixed(3), ratio >= HIGH_ZONE_RATIO ? 1 : 0,
     sounding ? 1 : 0, circleSize.toFixed(1),
-    EXP_NAME, COND_NO, REVERB_ON ? 1 : 0
+    EXP_NAME, COND_NO, REVERB_ON ? 1 : 0, ORDER_POS
   ]);
 }
 
@@ -304,7 +312,7 @@ function exportCSV() {
   const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const name = 'pinch_' + participantId + '_' + EXP_NAME + '_c' + COND_NO + '_' + SOUND_PARAM +
+  const name = 'pinch_' + participantId + '_' + EXP_NAME + '_c' + COND_NO + '_o' + ORDER_POS + '_' + SOUND_PARAM +
                '_max' + FREQ_MAX + '_' + (PITCH_REVERSED ? 'rev' : 'norm') +
                (REVERB_ON ? '_reverb' : '_noreverb') + '_' + stamp + '.csv';
   const aTag = document.createElement('a');

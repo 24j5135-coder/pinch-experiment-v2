@@ -12,9 +12,11 @@
     button { font-size: 20px; padding: 14px 20px; width: 100%; margin-top: 12px; border: 0; border-radius: 10px; background: #2878c8; color: #fff; }
     .sub { background: none; color: #666; font-size: 14px; text-decoration: underline; margin-top: 32px; }
     ol { padding-left: 1.4em; margin: 6px 0; }
+    ul { list-style: none; padding-left: 0.4em; margin: 6px 0; }
     .done { color: #2a8a3a; }
     .next { font-weight: bold; }
     .err { color: #c00; min-height: 1.5em; }
+    .memo { color: #999; font-size: 12px; margin: 2px 0 0; }
   </style>
 </head>
 <body>
@@ -46,7 +48,30 @@
     function del(k) { try { localStorage.removeItem(k); } catch (e) {} }
     function clearAll() {
       del('pinch_id');
-      EXPS.forEach(function (e) { for (var i = 1; i <= e.n; i++) del('pinch_done_' + e.name + '_' + i); });
+      EXPS.forEach(function (e) {
+        del('pinch_order_' + e.name);
+        for (var i = 1; i <= e.n; i++) del('pinch_done_' + e.name + '_' + i);
+      });
+    }
+
+    // 条件の提示順序:参加者ごとにランダムに決めて保存する(練習は順番なし)
+    function shuffled(n) {
+      var a = [];
+      for (var i = 1; i <= n; i++) a.push(i);
+      for (var j = a.length - 1; j > 0; j--) {
+        var k = Math.floor(Math.random() * (j + 1));
+        var t = a[j]; a[j] = a[k]; a[k] = t;
+      }
+      return a;
+    }
+    function getOrder(e) {
+      if (e.name === 'practice') return [1];
+      var saved = (get('pinch_order_' + e.name) || '').split(',').map(Number);
+      var ok = saved.length === e.n && saved.slice().sort().join(',') === shuffled(e.n).sort().join(',');
+      if (ok) return saved;
+      var order = shuffled(e.n);
+      set('pinch_order_' + e.name, order.join(','));
+      return order;
     }
 
     function render() {
@@ -59,21 +84,24 @@
       var box = document.getElementById('exps');
       box.innerHTML = '';
       EXPS.forEach(function (e) {
-        var next = 0, items = '';
-        for (var i = 1; i <= e.n; i++) {
+        var order = getOrder(e);
+        var next = 0, nextPos = 0, items = '';
+        for (var pos = 1; pos <= e.n; pos++) {
+          var i = order[pos - 1];                       // pos番目に行う条件の番号
           var done = get('pinch_done_' + e.name + '_' + i) === '1';
-          if (!done && next === 0) next = i;
+          if (!done && next === 0) { next = i; nextPos = pos; }
           var cls = done ? 'done' : (next === i ? 'next' : '');
           var mark = done ? '(完了)' : (next === i ? '(次はこちら)' : '');
-          items += '<li class="' + cls + '">' + (e.label || '条件' + i) + ' ' + mark + '</li>';
+          items += '<li class="' + cls + '">' + (e.label || pos + 'つ目') + ' ' + mark + '</li>';
         }
         var sec = document.createElement('div');
-        sec.innerHTML = '<h2>' + e.title + '</h2><ol>' + items + '</ol>';
+        sec.innerHTML = '<h2>' + e.title + '</h2><ul>' + items + '</ul>' +
+          (e.name === 'practice' ? '' : '<p class="memo">記録用:条件の順番 ' + order.join(' → ') + '</p>');
         if (next === 0) {
           sec.insertAdjacentHTML('beforeend', '<p><b>' + (e.name === 'practice' ? '練習は終了しました。' : e.title + 'はすべて終了しました。') + '</b></p>');
         } else {
           var b = document.createElement('button');
-          b.textContent = e.start || (e.title + ':' + (next === 1 ? '条件1を始める' : '条件' + next + 'へ進む'));
+          b.textContent = e.start || (e.title + ':' + (nextPos === 1 ? '1つ目を始める' : nextPos + 'つ目へ進む'));
           b.onclick = function () { window.location.href = e.name + '_cond' + next + '/'; };
           sec.appendChild(b);
         }
